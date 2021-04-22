@@ -52,6 +52,7 @@ public final class CoreDataFeedStore: FeedStore {
 				try context.save()
 				completion(nil)
 			} catch {
+				try! ManagedFeedCache.deleteAll(context: context)
 				completion(error)
 			}
 		}
@@ -89,6 +90,10 @@ class ManagedFeedCache: NSManagedObject {
 	static func getUniqueInstance(context: NSManagedObjectContext) throws -> ManagedFeedCache {
 		try find(context: context).map(context.delete)
 		return ManagedFeedCache(context: context)
+	}
+
+	static func deleteAll(context: NSManagedObjectContext) throws {
+		try find(context: context).map(context.delete)
 	}
 
 	var local: [LocalFeedImage] {
