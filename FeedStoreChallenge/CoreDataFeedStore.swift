@@ -44,7 +44,7 @@ public final class CoreDataFeedStore: FeedStore {
 	}
 
 	public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
-		context.perform { [context] in
+		context.perform { [unowned self, context] in
 			do {
 				let feedCache = try ManagedFeedCache.getUniqueInstance(context: context)
 				feedCache.timestamp = timestamp
@@ -52,14 +52,21 @@ public final class CoreDataFeedStore: FeedStore {
 				try context.save()
 				completion(nil)
 			} catch {
-				try! ManagedFeedCache.deleteAll(context: context)
+				self.deleteCachedFeed { _ in }
 				completion(error)
 			}
 		}
 	}
 
 	public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
-		completion(nil)
+		context.perform { [context] in
+			do {
+				try ManagedFeedCache.deleteAll(context: context)
+				completion(nil)
+			} catch {
+				completion(error)
+			}
+		}
 	}
 
 	private func map(_ images: [LocalFeedImage], context: NSManagedObjectContext) -> NSOrderedSet {
