@@ -43,14 +43,14 @@ public final class CoreDataFeedStore: FeedStore {
 	}
 
 	public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
-		context.perform { [unowned self, context] in
+		context.perform { [context] in
 			do {
 				try ManagedFeedCache.deleteAll(context: context)
 				try context.save()
 
 				let feedCache = try ManagedFeedCache.getUniqueInstance(context: context)
 				feedCache.timestamp = timestamp
-				feedCache.feed = self.map(feed, context: context)
+				feedCache.feed = ManagedFeedCache.map(feed, context: context)
 				try context.save()
 				completion(nil)
 			} catch {
@@ -64,26 +64,13 @@ public final class CoreDataFeedStore: FeedStore {
 			do {
 				try ManagedFeedCache.deleteAll(context: context)
 				try context.save()
-				
+
 				completion(nil)
 			} catch {
 				context.rollback()
 				completion(error)
 			}
 		}
-	}
-
-	private func map(_ images: [LocalFeedImage], context: NSManagedObjectContext) -> NSOrderedSet {
-		let models = images.map { image -> ManagedFeedImage in
-			let model = ManagedFeedImage(context: context)
-			model.id = image.id
-			model.imageDescription = image.description
-			model.location = image.location
-			model.url = image.url
-			return model
-		}
-
-		return NSOrderedSet(array: models)
 	}
 }
 
@@ -105,6 +92,19 @@ class ManagedFeedCache: NSManagedObject {
 
 	static func deleteAll(context: NSManagedObjectContext) throws {
 		try find(context: context).map(context.delete)
+	}
+
+	static func map(_ images: [LocalFeedImage], context: NSManagedObjectContext) -> NSOrderedSet {
+		let models = images.map { image -> ManagedFeedImage in
+			let model = ManagedFeedImage(context: context)
+			model.id = image.id
+			model.imageDescription = image.description
+			model.location = image.location
+			model.url = image.url
+			return model
+		}
+
+		return NSOrderedSet(array: models)
 	}
 
 	var local: [LocalFeedImage] {
