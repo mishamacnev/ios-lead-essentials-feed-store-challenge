@@ -31,8 +31,7 @@ public final class CoreDataFeedStore: FeedStore {
 	public func retrieve(completion: @escaping RetrievalCompletion) {
 		context.perform { [context] in
 			do {
-				let data = try ManagedFeedCache.find(context: context)
-				if let data = data {
+				if let data = try ManagedFeedCache.find(context: context) {
 					completion(.found(feed: data.local, timestamp: data.timestamp))
 				} else {
 					completion(.empty)
@@ -64,9 +63,8 @@ public final class CoreDataFeedStore: FeedStore {
 		context.perform { [context] in
 			do {
 				try ManagedFeedCache.deleteAll(context: context)
-
 				try context.save()
-
+				
 				completion(nil)
 			} catch {
 				context.rollback()
