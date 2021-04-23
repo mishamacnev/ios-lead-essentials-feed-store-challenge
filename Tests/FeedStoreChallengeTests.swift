@@ -121,12 +121,12 @@ class FeedStoreChallengeTests: XCTestCase, FailableFeedStoreSpecs {
 	}
 
 	func test_delete_deliversErrorOnDeletionError() throws {
-//		let stub = NSManagedObjectContext.alwaysFailingSaveStub()
-//		stub.startIntercepting()
-//
-//		let sut = try makeSUT()
-//
-//		assertThatDeleteDeliversErrorOnDeletionError(on: sut)
+		let stub = NSManagedObjectContext.alwaysFailingSaveStub()
+		stub.startIntercepting()
+
+		let sut = try makeSUT()
+
+		assertThatDeleteDeliversErrorOnDeletionError(on: sut)
 	}
 
 	func test_delete_hasNoSideEffectsOnDeletionError() throws {
