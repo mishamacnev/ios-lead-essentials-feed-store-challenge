@@ -48,10 +48,9 @@ public final class CoreDataFeedStore: FeedStore {
 				try ManagedFeedCache.deleteAll(context: context)
 				try context.save()
 
-				let feedCache = try ManagedFeedCache.getUniqueInstance(context: context)
-				feedCache.timestamp = timestamp
-				feedCache.feed = ManagedFeedCache.map(feed, context: context)
+				try ManagedFeedCache.create(feed: feed, timestamp: timestamp, context: context)
 				try context.save()
+				
 				completion(nil)
 			} catch {
 				completion(error)
@@ -105,6 +104,12 @@ class ManagedFeedCache: NSManagedObject {
 		}
 
 		return NSOrderedSet(array: models)
+	}
+
+	static func create(feed: [LocalFeedImage], timestamp: Date, context: NSManagedObjectContext) throws {
+		let feedCache = try ManagedFeedCache.getUniqueInstance(context: context)
+		feedCache.timestamp = timestamp
+		feedCache.feed = ManagedFeedCache.map(feed, context: context)
 	}
 
 	var local: [LocalFeedImage] {
