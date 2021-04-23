@@ -50,7 +50,7 @@ public final class CoreDataFeedStore: FeedStore {
 
 				try ManagedFeedCache.create(feed: feed, timestamp: timestamp, context: context)
 				try context.save()
-				
+
 				completion(nil)
 			} catch {
 				completion(error)
@@ -94,16 +94,14 @@ class ManagedFeedCache: NSManagedObject {
 	}
 
 	static func map(_ images: [LocalFeedImage], context: NSManagedObjectContext) -> NSOrderedSet {
-		let models = images.map { image -> ManagedFeedImage in
+		return NSOrderedSet(array: images.map { image in
 			let model = ManagedFeedImage(context: context)
 			model.id = image.id
 			model.imageDescription = image.description
 			model.location = image.location
 			model.url = image.url
 			return model
-		}
-
-		return NSOrderedSet(array: models)
+		})
 	}
 
 	static func create(feed: [LocalFeedImage], timestamp: Date, context: NSManagedObjectContext) throws {
