@@ -46,13 +46,15 @@ public final class CoreDataFeedStore: FeedStore {
 	public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
 		context.perform { [unowned self, context] in
 			do {
+				try ManagedFeedCache.deleteAll(context: context)
+				try context.save()
+
 				let feedCache = try ManagedFeedCache.getUniqueInstance(context: context)
 				feedCache.timestamp = timestamp
 				feedCache.feed = self.map(feed, context: context)
 				try context.save()
 				completion(nil)
 			} catch {
-				self.deleteCachedFeed { _ in }
 				completion(error)
 			}
 		}
@@ -67,6 +69,7 @@ public final class CoreDataFeedStore: FeedStore {
 
 				completion(nil)
 			} catch {
+				context.rollback()
 				completion(error)
 			}
 		}
