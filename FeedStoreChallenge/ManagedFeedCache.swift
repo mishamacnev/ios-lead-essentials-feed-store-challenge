@@ -21,7 +21,7 @@ final class ManagedFeedCache: NSManagedObject {
 		try find(context: context).map(context.delete)
 	}
 
-	static func map(_ images: [LocalFeedImage], context: NSManagedObjectContext) -> NSOrderedSet {
+	private static func map(_ images: [LocalFeedImage], context: NSManagedObjectContext) -> NSOrderedSet {
 		return NSOrderedSet(array: images.map { image in
 			let model = ManagedFeedImage(context: context)
 			model.id = image.id
