@@ -53,6 +53,7 @@ public final class CoreDataFeedStore: FeedStore {
 
 				completion(nil)
 			} catch {
+				context.rollback()
 				completion(error)
 			}
 		}
