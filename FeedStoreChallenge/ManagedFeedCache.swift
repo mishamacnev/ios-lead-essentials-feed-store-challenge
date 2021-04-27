@@ -21,7 +21,7 @@ final class ManagedFeedCache: NSManagedObject {
 		try find(context: context).map(context.delete)
 	}
 
-	private static func map(_ images: [LocalFeedImage], context: NSManagedObjectContext) -> NSOrderedSet {
+	static func map(_ images: [LocalFeedImage], context: NSManagedObjectContext) -> NSOrderedSet {
 		return NSOrderedSet(array: images.map { image in
 			let model = ManagedFeedImage(context: context)
 			model.id = image.id
@@ -30,12 +30,6 @@ final class ManagedFeedCache: NSManagedObject {
 			model.url = image.url
 			return model
 		})
-	}
-
-	static func create(feed: [LocalFeedImage], timestamp: Date, context: NSManagedObjectContext) throws {
-		let feedCache = try ManagedFeedCache.getUniqueInstance(context: context)
-		feedCache.timestamp = timestamp
-		feedCache.feed = ManagedFeedCache.map(feed, context: context)
 	}
 
 	var local: [LocalFeedImage] {

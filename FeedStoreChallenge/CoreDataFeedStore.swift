@@ -45,10 +45,10 @@ public final class CoreDataFeedStore: FeedStore {
 	public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
 		context.perform { [context] in
 			do {
-				try ManagedFeedCache.deleteAll(context: context)
-				try context.save()
+				let feedCache = try ManagedFeedCache.getUniqueInstance(context: context)
+				feedCache.timestamp = timestamp
+				feedCache.feed = ManagedFeedCache.map(feed, context: context)
 
-				try ManagedFeedCache.create(feed: feed, timestamp: timestamp, context: context)
 				try context.save()
 
 				completion(nil)
