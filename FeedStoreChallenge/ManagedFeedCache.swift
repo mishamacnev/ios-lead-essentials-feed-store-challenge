@@ -17,7 +17,7 @@ final class ManagedFeedCache: NSManagedObject {
 		return ManagedFeedCache(context: context)
 	}
 
-	static func deleteAll(context: NSManagedObjectContext) throws {
+	static func delete(context: NSManagedObjectContext) throws {
 		try find(context: context).map(context.delete)
 	}
 
